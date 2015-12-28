@@ -12,25 +12,33 @@ public class EditRoom : EditorWindow
 		window.Show ();
 	}
 
-	public Marker marker;
-	public Object outputFolder;
-	public Object prefab;
+	private Marker _marker;
+	private Object _outputFolder;
+	private Object _prefab;
 	private Vector2 _scrollPosition;
+	private Common.RoomType _roomType;
 
 	private void OnGUI ()
 	{
 		_scrollPosition = EditorGUILayout.BeginScrollView (_scrollPosition);
 		if (SetMarker () && SetOutputFolder () && SetPrefab ()) {
-			MarkerAnalysis ();
+			SetType ();
+			_markerAnalysis ();
 		}
 		EditorGUILayout.EndScrollView ();
 	}
 
+	private void SetType ()
+	{
+		EditorLine ();
+		_roomType = (Common.RoomType)EditorGUILayout.EnumPopup ("roomType", _roomType);
+	}
+
 	private bool SetPrefab ()
 	{
-		LineMarker ();
-		prefab = EditorGUILayout.ObjectField ("Prefab", prefab, typeof(Object), true);
-		if (prefab != null)
+		EditorLine ();
+		_prefab = EditorGUILayout.ObjectField ("prefab", _prefab, typeof(Object), true);
+		if (_prefab != null)
 			return true;
 		else
 			return false;
@@ -38,9 +46,9 @@ public class EditRoom : EditorWindow
 
 	private bool SetOutputFolder ()
 	{
-		LineMarker ();
-		outputFolder = EditorGUILayout.ObjectField ("Output Folder", outputFolder, typeof(Object), false);
-		if (outputFolder != null)
+		EditorLine ();
+		_outputFolder = EditorGUILayout.ObjectField ("Output Folder", _outputFolder, typeof(Object), false);
+		if (_outputFolder != null)
 			return true;
 		else
 			return false;
@@ -48,20 +56,20 @@ public class EditRoom : EditorWindow
 
 	private bool SetMarker ()
 	{
-		LineMarker ();
-		marker = (Marker)EditorGUILayout.ObjectField ("Marker", marker, typeof(Marker), true);
-		if (marker != null)
+		EditorLine ();
+		_marker = (Marker)EditorGUILayout.ObjectField ("marker", _marker, typeof(Marker), true);
+		if (_marker != null)
 			return true;
 		else
 			return false;
 	}
 
-	private void MarkerAnalysis ()
+	private void _markerAnalysis ()
 	{
 		if (GUILayout.Button ("Generate RoomDefine")) {
 			
 			var cellList = new List<Vector4> ();
-			var list = marker.GetCellList ();
+			var list = _marker.GetCellList ();
 
 			for (int i = 0; i < list.Count; i++) {
 				var mark = list [i];
@@ -74,20 +82,21 @@ public class EditRoom : EditorWindow
 				cellList.Add (cellinfo);
 			}
 
-			var roomDefine = ScriptableObject.CreateInstance<RoomDefine> ();
-			roomDefine.listCell = cellList;
-			roomDefine.prefabName = prefab.name;
-			roomDefine.limit = marker.GetLimit ();
-			var outputPath = AssetDatabase.GetAssetPath (outputFolder);
-			string assetpath = AssetDatabase.GenerateUniqueAssetPath (outputPath + "/" + prefab.name + ".asset");
-			AssetDatabase.CreateAsset (roomDefine, assetpath);
+			var define = ScriptableObject.CreateInstance<RoomDefine> ();
+			define.listCell = cellList;
+			define.prefabName = _prefab.name;
+			define.limit = _marker.GetLimit ();
+
+			var outputPath = AssetDatabase.GetAssetPath (_outputFolder);
+			string assetpath = AssetDatabase.GenerateUniqueAssetPath (outputPath + "/" + _prefab.name + ".asset");
+			AssetDatabase.CreateAsset (define, assetpath);
 			AssetDatabase.SaveAssets ();
 			EditorUtility.FocusProjectWindow ();
-			Selection.activeObject = roomDefine;
+			Selection.activeObject = define;
 		}
 	}
 
-	private void LineMarker ()
+	private void EditorLine ()
 	{
 		GUILayout.Box ("", GUILayout.Width (this.position.width), GUILayout.Height (1));
 	}

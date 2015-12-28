@@ -8,20 +8,6 @@ public class Room : MonoBehaviour
 	private RoomDefine _define;
 	private Cell[,,] _listCell;
 	private Vector3 _limit;
-	private Cell _enter;
-	private Cell _exit;
-
-	public IEnumerator SetRoomDefine (RoomDefine define)
-	{
-		_define = define;
-		_limit = _define.limit;
-
-		var listDefine = _define.listCell;
-		yield return StartCoroutine (CreateCells (listDefine));
-		yield return StartCoroutine (CheckCells ());
-		yield break;
-		//CheckCells ();
-	}
 
 	public Vector3 GetLimit ()
 	{
@@ -38,12 +24,18 @@ public class Room : MonoBehaviour
 		return cell;
 	}
 
-	public Cell GetEnterCell ()
+	public IEnumerator SequenceInit (RoomDefine define)
 	{
-		return _enter;
+		_define = define;
+		_limit = _define.limit;
+
+		var listDefine = _define.listCell;
+		yield return StartCoroutine (SequenceCreateCells (listDefine));
+		yield return StartCoroutine (SequenceCheckCells ());
+		yield break;
 	}
 
-	private IEnumerator CreateCells (List<Vector4> listDefine)
+	private IEnumerator SequenceCreateCells (List<Vector4> listDefine)
 	{
 		_listCell = new Cell [(int)_limit.x, (int)_limit.y, (int)_limit.z];
 
@@ -61,21 +53,13 @@ public class Room : MonoBehaviour
 			cell.SetSolidID (new Vector3 (x, y, z)); 
 			cell.SetCellType (w);
 
-			if (w == 4) {
-				_enter = cell;
-				Debug.Log ("Enter" + cell.GetSolidID ());
-			} else if (w == 5) {
-				_exit = cell;
-				Debug.Log ("Exit" + cell.GetSolidID ());
-			}
-
 			_listCell [x, y, z] = cell;
 		}
 
 		yield break;
 	}
 
-	private IEnumerator CheckCells ()
+	private IEnumerator SequenceCheckCells ()
 	{
 		var x = (int)_limit.x;
 		var y = (int)_limit.y;

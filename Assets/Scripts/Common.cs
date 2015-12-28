@@ -14,9 +14,28 @@ public class Common
 		Hole
 	}
 
+	public enum MapType
+	{
+		Basic,
+		StairsUP,
+		StairsDown,
+		HighFloar,
+		LowFloar,
+	}
+
 	public enum RoomType
 	{
-		Basic
+		In,
+		Out,
+		Enter,
+		Exit,
+	}
+
+	public enum InType
+	{
+		Room,
+		Corridor,
+		Stairs,
 	}
 
 	public enum AnimType
@@ -47,7 +66,7 @@ public class Common
 		}
 	}
 
-	public float GetBaseDuration ()
+	public float GetDuration ()
 	{
 		return  0.2f;
 	}
@@ -60,6 +79,33 @@ public class Common
 	public string GetPrefabsString ()
 	{
 		return "Prefabs";
+	}
+
+	public string GetRoomTypeString (MapType type)
+	{
+		string str;
+		switch (type) {
+
+		case MapType.Basic:
+			str = "Basic";
+			break;
+		case MapType.HighFloar:
+			str = "HighFloar";
+			break;
+		case MapType.LowFloar:
+			str = "LowFloar";
+			break;
+		case MapType.StairsDown:
+			str = "StairsDown";
+			break;
+		case MapType.StairsUP:
+			str = "StairsUP";
+			break;
+		default:
+			str = "Basic";
+			break;
+		}
+		return str;
 	}
 
 	public string GetAnimTypeString (AnimType type)
@@ -91,20 +137,6 @@ public class Common
 
 		default:
 			str = "IDLE";
-			break;
-		}
-		return str;
-	}
-
-	public string GetCellTypeString (RoomType type)
-	{
-		string str;
-		switch (type) {
-		case RoomType.Basic:
-			str = "Basic";
-			break;
-		default:
-			str = "Basic";
 			break;
 		}
 		return str;

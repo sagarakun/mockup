@@ -8,6 +8,8 @@ public class Marker : MonoBehaviour
 	[SerializeField] private List<Mark> _list;
 	[SerializeField] private Vector3 _limit = new Vector3 (20, 20, 20);
 
+	private bool _isInit = false;
+
 	public List<Mark> GetCellList ()
 	{
 		return _list;
@@ -16,6 +18,14 @@ public class Marker : MonoBehaviour
 	private void Start ()
 	{
 		StartCoroutine (SequenceInit ());
+	}
+
+	private void Update ()
+	{
+		if (_isInit == false) {
+			//StartCoroutine (SequenceInit ());
+		}
+		_isInit = true;
 	}
 
 	public Vector3 GetLimit ()

@@ -7,6 +7,7 @@ public class Map : MonoBehaviour
 	[SerializeField] private Player _player;
 	private Room _room;
 	private float _durartion;
+	private Coroutine _timerCoroutine;
 
 	private void Start ()
 	{
@@ -15,29 +16,8 @@ public class Map : MonoBehaviour
 
 	private IEnumerator SequenceInit ()
 	{
-		yield return StartCoroutine (SequenceInitMap ());
-		yield return new WaitForFixedUpdate ();
-		yield return StartCoroutine (SequenceTimer ());
-		yield break;
-	}
-
-	private IEnumerator SequenceInitMap ()
-	{
 		var common = Common.Instance;
-		_durartion = common.GetBaseDuration ();
-
-		yield return StartCoroutine (SequenceCreateRoom ());
-		yield return new WaitForFixedUpdate ();
-
-		_player.SetActiveRoom (_room);
-		_player.Action ();
-
-		yield break;
-	}
-
-	private IEnumerator SequenceCreateRoom ()
-	{
-		var common = Common.Instance;
+		_durartion = common.GetDuration ();
 
 		var definePath = common.GetDefineString () + "/room";
 		var roomDefine = Resources.Load (definePath) as RoomDefine;
@@ -51,7 +31,14 @@ public class Map : MonoBehaviour
 		_room = roomObject.GetComponent<Room> ();
 		_room.name = roomDefine.prefabName;
 
-		yield return StartCoroutine (_room.SetRoomDefine (roomDefine));
+		yield return StartCoroutine (_room.SequenceInit (roomDefine));
+		yield return StartCoroutine (_player.SequenceInit (_room));
+
+		yield return new WaitForFixedUpdate ();
+
+		_timerCoroutine = StartCoroutine (SequenceTimer ());
+		yield return _timerCoroutine;
+
 		yield break;
 	}
 
@@ -59,13 +46,24 @@ public class Map : MonoBehaviour
 	{
 		yield return new WaitForSeconds (_durartion);
 		yield return StartCoroutine (SequenceTurn ());
-		yield return StartCoroutine (SequenceTimer ());
+		_timerCoroutine = StartCoroutine (SequenceTimer ());
+		yield return _timerCoroutine;
 		yield break;
 	}
 
 	private IEnumerator SequenceTurn ()
 	{
 		_player.Action ();
+		yield break;
+	}
+
+	private IEnumerator SequenceChangeRoom ()
+	{
+		StopCoroutine (_timerCoroutine);
+
+		yield return new WaitForFixedUpdate ();
+		yield return StartCoroutine (SequenceTimer ());
+
 		yield break;
 	}
 }

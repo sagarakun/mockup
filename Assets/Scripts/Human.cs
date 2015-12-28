@@ -17,7 +17,7 @@ public class Human : MonoBehaviour
 	private void Awake ()
 	{
 		var common = Common.Instance;
-		_duration = common.GetBaseDuration ();
+		_duration = common.GetDuration ();
 
 		_animator = transform.GetComponent<Animator> ();
 

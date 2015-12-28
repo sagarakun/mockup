@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
 	private void Start ()
 	{
 		var common = Common.Instance;
-		_duration = common.GetBaseDuration ();
+		_duration = common.GetDuration ();
 		DOTween.Init ();
 	}
 
@@ -78,14 +78,15 @@ public class Player : MonoBehaviour
 
 	// public function  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	public void SetActiveRoom (Room room)
+	public IEnumerator SequenceInit (Room room)
 	{
 		_activeRoom = room;
-		var centerCell = _activeRoom.GetEnterCell ();
+//		var centerCell = _activeRoom.GetEnterCell ();
 //		Debug.Log ("-----" + centerCell);
 
-		_cell = centerCell;
-		_cell.SetObject (transform);
+//		_cell = centerCell;
+//		_cell.SetObject (transform);
+		yield break;
 	}
 
 	public void Action ()
